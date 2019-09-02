@@ -1,30 +1,30 @@
 // Terraform plugin for creating random ids
 resource "random_id" "instance_id" {
- byte_length = 8
+  byte_length = 8
 }
 
 resource "google_compute_network" "vpc_network" {
-  name = "terraform-network"
+  name                    = "terraform-network"
   auto_create_subnetworks = "true"
 }
 
 resource "google_compute_firewall" "default" {
-  name    = "terraform-firewall"
-  network = "${google_compute_network.vpc_network.self_link}"
-  target_tags   = ["docker-node"]
+  name        = "terraform-firewall"
+  network     = "${google_compute_network.vpc_network.self_link}"
+  target_tags = ["webapp"]
   allow {
-   protocol = "tcp"
-   ports    = ["5000","22","80"]
-    }
+    protocol = "tcp"
+    ports    = ["5000", "22", "80"]
+  }
 }
 
 // A single Google Cloud Engine instance
 resource "google_compute_instance" "default" {
   //count = 1
   //name = "webapp-${count.index}"
-  name = "webapp-${random_id.instance_id.hex}"
+  name         = "webapp-${random_id.instance_id.hex}"
   machine_type = "f1-micro"
-  tags = ["webapp"]
+  tags         = ["webapp"]
 
   boot_disk {
     initialize_params {
@@ -47,12 +47,12 @@ resource "google_compute_instance" "default" {
   //metadata_startup_script = "sudo apt-get update; sudo apt-get install -yq build-essential python-pip rsync; sudo apt-get install yum -y; sudo yum update -y"
 
   connection {
-    host = "${google_compute_instance.default.network_interface.0.access_config.0.nat_ip}"
-    type = "ssh"
-    user = "dchoi5"
+    host        = "${google_compute_instance.default.network_interface.0.access_config.0.nat_ip}"
+    type        = "ssh"
+    user        = "dchoi5"
     private_key = "${file("~/.ssh/google_compute_engine")}"
-    agent = "false"
-    timeout = "15m"
+    agent       = "false"
+    timeout     = "15m"
   }
   /*
   provisioner "file" {

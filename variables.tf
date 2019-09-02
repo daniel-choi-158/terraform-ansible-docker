@@ -34,7 +34,6 @@ variable "github_token" {
   description = "Github API token to be used by Terraform"
 }
 
-
 variable "github_organization" {
   default = "daniel-choi-158"
 }
